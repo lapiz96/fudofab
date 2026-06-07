@@ -1,79 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
+import { GeometricMark, GradientOrb } from './ui/Visuals';
 
 export default function LoadingScreen({ onComplete }) {
-  const canvasRef = useRef(null);
   const [progress, setProgress] = useState(0);
   const [exiting, setExiting] = useState(false);
   const progressRef = useRef(0);
   const animFrameRef = useRef(null);
 
-  // Three.js particle background
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
-
-    // Particle field
-    const count = 2500;
-    const positions = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
-    }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const mat = new THREE.PointsMaterial({ size: 0.025, color: 0x00d4ff, transparent: true, opacity: 0.6 });
-    const particles = new THREE.Points(geo, mat);
-    scene.add(particles);
-
-    // Central rotating wireframe
-    const torusGeo = new THREE.TorusKnotGeometry(1.2, 0.35, 80, 16);
-    const torusMat = new THREE.MeshBasicMaterial({ color: 0x00d4ff, wireframe: true, transparent: true, opacity: 0.12 });
-    const torus = new THREE.Mesh(torusGeo, torusMat);
-    scene.add(torus);
-
-    let frame;
-    const animate = () => {
-      frame = requestAnimationFrame(animate);
-      particles.rotation.y += 0.0005;
-      particles.rotation.x += 0.0002;
-      torus.rotation.x += 0.005;
-      torus.rotation.y += 0.008;
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', handleResize);
-      renderer.dispose();
-      geo.dispose();
-      mat.dispose();
-      torusGeo.dispose();
-      torusMat.dispose();
-    };
-  }, []);
-
-  // Progress counter
   useEffect(() => {
     let start = null;
-    const duration = 2800;
+    const duration = 2200;
 
     const step = (timestamp) => {
       if (!start) start = timestamp;
@@ -85,11 +21,10 @@ export default function LoadingScreen({ onComplete }) {
       if (pct < 100) {
         animFrameRef.current = requestAnimationFrame(step);
       } else {
-        // Start exit after small delay
         setTimeout(() => {
           setExiting(true);
-          setTimeout(() => onComplete?.(), 900);
-        }, 300);
+          setTimeout(() => onComplete?.(), 700);
+        }, 220);
       }
     };
 
@@ -103,7 +38,11 @@ export default function LoadingScreen({ onComplete }) {
 
   return (
     <div className={`loading-screen${exiting ? ' exit' : ''}`} aria-hidden={exiting}>
-      <canvas ref={canvasRef} className="loading-canvas" />
+      <GradientOrb size="420px" top="8%" left="8%" />
+      <GradientOrb size="360px" bottom="4%" right="10%" />
+      <div className="loading-geo" aria-hidden="true">
+        <GeometricMark variant="ring" />
+      </div>
 
       <div className="loading-content">
         <div className="loading-title" aria-label="FUDOFAB">

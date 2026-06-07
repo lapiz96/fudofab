@@ -1,39 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-import LottiePlayer from './LottiePlayer';
+import { memo, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { Parallax } from 'react-scroll-parallax';
+import BorderGlow from './ui/BorderGlow/BorderGlow';
+import { GeometricMark, GradientOrb } from './ui/Visuals';
+import SceneCanvas from './three/SceneCanvas';
+import ParticleField from './three/ParticleField';
+import { fadeUp, staggerChildren, tiltOnHover } from '../lib/motionVariants';
 
-const LOTTIE_URLS = [
-  'https://assets2.lottiefiles.com/packages/lf20_xyadoh9h.json',
-  'https://assets5.lottiefiles.com/packages/lf20_w51pcehl.json',
-  'https://assets10.lottiefiles.com/packages/lf20_fcfjwiyb.json',
-];
-
-function ServiceIcon3D({ type, hovered }) {
-  const ref = useRef();
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    ref.current.rotation.y += delta * (hovered ? 0.9 : 0.35);
-    ref.current.rotation.x += delta * (hovered ? 0.4 : 0.1);
-    ref.current.scale.setScalar(THREE.MathUtils.lerp(ref.current.scale.x, hovered ? 1.2 : 1.0, 0.08));
-  });
-  return (
-    <mesh ref={ref}>
-      {type === 0 && <octahedronGeometry args={[0.9, 0]} />}
-      {type === 1 && <torusKnotGeometry args={[0.65, 0.2, 80, 8]} />}
-      {type === 2 && <icosahedronGeometry args={[0.9, 0]} />}
-      <meshStandardMaterial
-        color={hovered ? '#00d4ff' : '#4f8ef7'}
-        emissive={hovered ? '#00d4ff' : '#0d2149'}
-        emissiveIntensity={hovered ? 0.8 : 0.3}
-        metalness={0.9} roughness={0.05}
-        wireframe={!hovered}
-      />
-    </mesh>
-  );
-}
-
-/* SVG icon for service check items */
 function CheckIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -50,8 +23,8 @@ const SERVICES = [
     title: 'Web Design &\nDevelopment',
     desc: 'We build high-performance, responsive websites and web applications that engage visitors and accelerate business growth. From custom UI/UX design to full-stack engineering, we deliver future-proof digital products.',
     checks: ['Custom UI/UX Design & Prototyping', 'React, Next.js & Modern Stacks', 'E-Commerce & Headless CMS', 'SEO & Page Speed Optimization'],
-    lottieUrl: LOTTIE_URLS[0],
     flip: false,
+    visual: 'grid',
   },
   {
     number: '02',
@@ -59,8 +32,8 @@ const SERVICES = [
     title: 'Graphic Design\n& Branding',
     desc: 'We design cohesive brand identity systems and striking marketing assets that define your brand and captivate your audience. Every element is crafted to communicate your core values with precision.',
     checks: ['Brand Strategy & Logo Design', 'Digital & Print Collateral', 'Social Media Design Kits', 'Packaging & Visual Identity'],
-    lottieUrl: LOTTIE_URLS[1],
     flip: true,
+    visual: 'ring',
   },
   {
     number: '03',
@@ -68,30 +41,41 @@ const SERVICES = [
     title: 'Video Editing\n& Production',
     desc: 'We produce cinematic brand stories and high-impact social media video edits that drive engagement. From corporate promotional videos to viral short-form content, we bring your vision to life.',
     checks: ['Cinematic Video Production', 'Advanced Color Grading & Motion Graphics', 'Short-Form Reels & TikTok Campaigns', 'Post-Production & VFX'],
-    lottieUrl: LOTTIE_URLS[2],
     flip: false,
+    visual: 'hex',
   },
 ];
 
-function ServiceBlock({ service, index }) {
-  const [hovered, setHovered] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const blockRef = useRef(null);
-  const { number, tag, title, desc, checks, lottieUrl, flip } = service;
+const GLOW_PROPS = {
+  glowColor: '225 73 57',
+  backgroundColor: '#F0F4FF',
+  borderRadius: 20,
+  glowRadius: 35,
+  glowIntensity: 1.2,
+  coneSpread: 30,
+  animated: true,
+  colors: ['#4169E1', '#60A5FA', '#93c5fd'],
+};
 
-  useEffect(() => {
-    const el = blockRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
-      { threshold: 0.01, rootMargin: '0px 0px 0px 0px' }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+const ServiceVisual = memo(function ServiceVisual({ variant }) {
+  return (
+    <div className="svc-media">
+      <div className="svc-media-glow" />
+      <div className="svc-css-visual">
+        <GeometricMark variant={variant} />
+      </div>
+      <div className="svc-canvas-badge">
+        <GeometricMark variant={variant === 'grid' ? 'hex' : 'grid'} />
+      </div>
+    </div>
+  );
+});
+
+const ServiceBlock = memo(function ServiceBlock({ service, index }) {
+  const { number, tag, title, desc, checks, flip, visual } = service;
 
   const textContent = (
-    <div className="svc-text" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+    <div className="svc-text">
       <div className="svc-top-row">
         <span className="svc-number">{number}</span>
         <span className="svc-tag">{tag}</span>
@@ -115,82 +99,68 @@ function ServiceBlock({ service, index }) {
     </div>
   );
 
-  const mediaContent = (
-    <div className="svc-media">
-      <div className="svc-media-glow" />
-      <div className="svc-lottie-wrap">
-        <LottiePlayer src={lottieUrl} loop autoplay style={{ width: '100%', height: '100%' }} />
-      </div>
-      <div className="svc-canvas-badge">
-        <Canvas camera={{ position: [0, 0, 3], fov: 50 }} gl={{ alpha: true, antialias: true }} style={{ background: 'transparent' }}>
-          <ambientLight intensity={0.6} />
-          <pointLight position={[3, 3, 3]} intensity={2} color="#00d4ff" />
-          <ServiceIcon3D type={index} hovered={hovered} />
-        </Canvas>
-      </div>
-    </div>
-  );
+  const mediaContent = <ServiceVisual variant={visual} />;
 
   return (
-    <div
-      ref={blockRef}
-      className="svc-block"
-      id={`service-block-${index}`}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(40px)',
-        transition: `opacity 0.7s ease ${index * 0.1}s, transform 0.7s ease ${index * 0.1}s`,
-      }}
+    <motion.div
+      variants={tiltOnHover}
+      style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
     >
-      {flip ? <>{mediaContent}{textContent}</> : <>{textContent}{mediaContent}</>}
-    </div>
+      <BorderGlow {...GLOW_PROPS} className="svc-border-glow">
+        <motion.div
+          className="svc-block card-scan"
+          id={`service-block-${index}`}
+          variants={fadeUp}
+        >
+          {flip ? <>{mediaContent}{textContent}</> : <>{textContent}{mediaContent}</>}
+        </motion.div>
+      </BorderGlow>
+    </motion.div>
   );
-}
+});
 
 export default function Services() {
-  const [headerVisible, setHeaderVisible] = useState(false);
-  const headerRef = useRef(null);
-
-  useEffect(() => {
-    const el = headerRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setHeaderVisible(true); obs.disconnect(); } },
-      { threshold: 0.01 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
   return (
-    <section id="services" className="services-section">
-      <div
-        ref={headerRef}
-        className="svc-header"
-        style={{
-          opacity: headerVisible ? 1 : 0,
-          transform: headerVisible ? 'translateY(0)' : 'translateY(30px)',
-          transition: 'opacity 0.7s ease, transform 0.7s ease',
-        }}
-      >
-        <div className="svc-header-eyebrow">
-          <span className="eyebrow-dot" />
-          What We Do
-          <span className="eyebrow-dot" />
-        </div>
-        <h2 className="svc-header-title">
-          Our <span className="svc-title-accent">Services</span>
-        </h2>
-        <p className="svc-header-desc">
-          Three core disciplines, one unified creative vision — designed to elevate your brand across every digital touchpoint.
-        </p>
-      </div>
+    <motion.section
+      id="services"
+      className="services-section"
+      variants={staggerChildren}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-100px' }}
+    >
+      <SceneCanvas>
+        <ambientLight intensity={0.4} />
+        <ParticleField />
+      </SceneCanvas>
 
-      <div className="svc-blocks-list">
+      <Parallax speed={15} className="section-orbs" aria-hidden="true">
+        <GradientOrb size="360px" top="8%" left="-8%" />
+        <GradientOrb size="280px" top="46%" right="2%" />
+        <GradientOrb size="240px" bottom="4%" left="32%" />
+      </Parallax>
+
+      <Parallax speed={-5}>
+        <motion.div className="svc-header" variants={fadeUp}>
+          <div className="svc-header-eyebrow">
+            <span className="eyebrow-dot" />
+            What We Do
+            <span className="eyebrow-dot" />
+          </div>
+          <h2 className="svc-header-title">
+            Our <span className="svc-title-accent">Services</span>
+          </h2>
+          <p className="svc-header-desc">
+            Three core disciplines, one unified creative vision — designed to elevate your brand across every digital touchpoint.
+          </p>
+        </motion.div>
+      </Parallax>
+
+      <Parallax speed={-3} className="svc-blocks-list">
         {SERVICES.map((svc, i) => (
           <ServiceBlock key={i} service={svc} index={i} />
         ))}
-      </div>
-    </section>
+      </Parallax>
+    </motion.section>
   );
 }
