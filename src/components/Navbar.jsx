@@ -69,7 +69,7 @@ export default function Navbar() {
             position: 'fixed',
             inset: 0,
             zIndex: 999,
-            background: 'rgba(4,13,26,0.98)',
+            background: 'rgba(255,255,255,0.98)',
             backdropFilter: 'blur(20px)',
             display: 'flex',
             flexDirection: 'column',
@@ -89,13 +89,13 @@ export default function Navbar() {
                 fontSize: 'clamp(2rem, 8vw, 3rem)',
                 fontWeight: 800,
                 textTransform: 'uppercase',
-                color: 'var(--white)',
+                color: 'var(--text-primary)',
                 cursor: 'pointer',
                 letterSpacing: '0.1em',
                 transition: 'color 0.3s ease',
               }}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--cyan)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--white)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
             >
               {link}
             </button>
@@ -108,7 +108,7 @@ export default function Navbar() {
               right: '1.5rem',
               background: 'none',
               border: 'none',
-              color: 'var(--white)',
+              color: 'var(--text-primary)',
               fontSize: '1.5rem',
               cursor: 'pointer',
               padding: '0.5rem',

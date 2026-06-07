@@ -1,50 +1,7 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Canvas, useFrame } from '@react-three/fiber';
-import LottiePlayer from '../components/LottiePlayer';
-
-/* ── Cosmic particle (same style as Contact) ───────────────────── */
-function CosmicFlow() {
-  const ref = useRef();
-  const COUNT = 1800;
-
-  const { positions, colors } = useMemo(() => {
-    const pos = new Float32Array(COUNT * 3);
-    const col = new Float32Array(COUNT * 3);
-    for (let i = 0; i < COUNT; i++) {
-      const t = i / COUNT;
-      const arm = Math.floor(Math.random() * 3);
-      const armAngle = (arm / 3) * Math.PI * 2;
-      const angle = t * Math.PI * 8 + armAngle;
-      const radius = Math.pow(t, 0.5) * 6 + Math.random() * 0.5;
-      pos[i * 3]     = Math.cos(angle) * radius + (Math.random() - 0.5) * 0.4;
-      pos[i * 3 + 1] = Math.sin(angle) * radius + (Math.random() - 0.5) * 0.4;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 1.2;
-      const b = Math.random();
-      col[i * 3]     = b * 0.31;
-      col[i * 3 + 1] = b * 0.55 + (1 - b) * 0.83;
-      col[i * 3 + 2] = 1.0;
-    }
-    return { positions: pos, colors: col };
-  }, []);
-
-  useFrame(({ clock }) => {
-    if (!ref.current) return;
-    const t = clock.getElapsedTime();
-    ref.current.rotation.z = t * 0.035;
-    ref.current.rotation.x = Math.sin(t * 0.1) * 0.12;
-  });
-
-  return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={COUNT} array={positions} itemSize={3} />
-        <bufferAttribute attach="attributes-color"    count={COUNT} array={colors}    itemSize={3} />
-      </bufferGeometry>
-      <pointsMaterial vertexColors size={0.024} transparent opacity={0.65} sizeAttenuation depthWrite={false} />
-    </points>
-  );
-}
+import BorderGlow from '../components/ui/BorderGlow/BorderGlow';
+import { GeometricMark, GradientOrb } from '../components/ui/Visuals';
 
 /* ── Service options ─────────────────────────────────────────────── */
 const SERVICES = [
@@ -141,15 +98,14 @@ export default function Enquiry() {
 
   return (
     <div className="enq-page">
-      {/* Cosmic background */}
+      {/* CSS-only background */}
       <div className="enq-bg-canvas" aria-hidden>
-        <Canvas camera={{ position: [0, 0, 9], fov: 55 }}
-          gl={{ alpha: true, antialias: true }} style={{ background: 'transparent' }}>
-          <CosmicFlow />
-        </Canvas>
+        <GeometricMark variant="grid" className="enq-bg-geo" />
       </div>
       <div className="enq-glow-1" />
       <div className="enq-glow-2" />
+      <GradientOrb size="380px" top="16%" left="4%" />
+      <GradientOrb size="300px" bottom="10%" right="6%" />
 
       {/* Nav */}
       <nav className="enq-nav scrolled">
@@ -169,10 +125,7 @@ export default function Enquiry() {
           /* ── Success ──────────────────────────────────────────── */
           <div className="enq-success">
             <div className="enq-success-lottie">
-              <LottiePlayer
-                src="https://assets5.lottiefiles.com/packages/lf20_obhph3py.json"
-                loop={false} autoplay style={{ width: 160, height: 160 }}
-              />
+              <GeometricMark variant="ring" />
             </div>
             <h2 className="enq-success-title">Enquiry Received!</h2>
             <p className="enq-success-text">
@@ -258,6 +211,17 @@ export default function Enquiry() {
             </div>
 
             {/* Right form panel */}
+            <BorderGlow
+              glowColor="225 73 57"
+              backgroundColor="#dfe1e5"
+              borderRadius={20}
+              glowRadius={35}
+              glowIntensity={1.4}
+              coneSpread={30}
+              animated={true}
+              colors={['#4169E1', '#60A5FA', '#1e3a8a']}
+              className="enq-form-glow"
+            >
             <div className="enq-form-panel">
               {/* Thin progress bar at top */}
               <div className="enq-form-progress">
@@ -361,6 +325,7 @@ export default function Enquiry() {
 
               </form>
             </div>
+            </BorderGlow>
           </div>
         )}
       </div>

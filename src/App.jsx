@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import LoadingScreen from './components/LoadingScreen';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import Marquee from './components/Marquee';
-import Services from './components/Services';
-import About from './components/About';
-import Portfolio from './components/Portfolio';
-import Testimonials from './components/Testimonials';
-import Contact from './components/Contact';
-import Enquiry from './pages/Enquiry';
+
+const Marquee = lazy(() => import('./components/Marquee'));
+const Services = lazy(() => import('./components/Services'));
+const About = lazy(() => import('./components/About'));
+const Portfolio = lazy(() => import('./components/Portfolio'));
+const Testimonials = lazy(() => import('./components/Testimonials'));
+const Contact = lazy(() => import('./components/Contact'));
+const Enquiry = lazy(() => import('./pages/Enquiry'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,11 +35,16 @@ function MainSite() {
         });
         lenisRef.current = lenis;
         lenis.on('scroll', ScrollTrigger.update);
-        gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+        const raf = (time) => { lenis.raf(time * 1000); };
+        gsap.ticker.add(raf);
         gsap.ticker.lagSmoothing(0);
+        ScrollTrigger.refresh();
+        const onResize = () => ScrollTrigger.refresh();
+        window.addEventListener('resize', onResize, { passive: true });
         return () => {
+          window.removeEventListener('resize', onResize);
           lenis.destroy();
-          gsap.ticker.remove((time) => { lenis.raf(time * 1000); });
+          gsap.ticker.remove(raf);
         };
       } catch (err) {
         console.warn('Lenis not available, using native scroll');
@@ -58,12 +64,14 @@ function MainSite() {
         <Navbar />
         <main>
           <Hero />
-          <Marquee />
-          <Services />
-          <About />
-          <Portfolio />
-          <Testimonials />
-          <Contact />
+          <Suspense fallback={null}>
+            <Marquee />
+            <Services />
+            <About />
+            <Portfolio />
+            <Testimonials />
+            <Contact />
+          </Suspense>
         </main>
       </div>
     </>
@@ -73,10 +81,12 @@ function MainSite() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<MainSite />} />
-        <Route path="/enquiry" element={<Enquiry />} />
-      </Routes>
+      <Suspense fallback={null}>
+        <Routes>
+          <Route path="/" element={<MainSite />} />
+          <Route path="/enquiry" element={<Enquiry />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

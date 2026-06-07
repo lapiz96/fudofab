@@ -1,7 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
-import LottiePlayer from './LottiePlayer';
+import { motion } from 'framer-motion';
+import { Parallax } from 'react-scroll-parallax';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import BorderGlow from './ui/BorderGlow/BorderGlow';
+import { GeometricMark, GradientOrb } from './ui/Visuals';
+import SceneCanvas from './three/SceneCanvas';
+import WireframeIcosahedron from './three/WireframeIcosahedron';
+import { fadeUp, slideInLeft, staggerChildren, tiltOnHover } from '../lib/motionVariants';
 
-/* SVG Icons replacing emojis */
+gsap.registerPlugin(ScrollTrigger);
+
+const GLOW_PROPS = {
+  glowColor: '225 73 57',
+  backgroundColor: '#F0F4FF',
+  borderRadius: 20,
+  glowRadius: 35,
+  glowIntensity: 1.2,
+  coneSpread: 30,
+  animated: true,
+  colors: ['#4169E1', '#60A5FA', '#93c5fd'],
+};
+
 const FeatureIcons = {
   speed: (
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -31,65 +51,42 @@ const FeatureIcons = {
   ),
 };
 
-function useCountUp(end, duration = 1800, shouldStart = false) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!shouldStart) return;
-    let startTime = null;
-    const step = ts => {
-      if (!startTime) startTime = ts;
-      const progress = Math.min((ts - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * end));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [end, duration, shouldStart]);
-  return count;
-}
-
-function StatItem({ prefix = '', num, suffix, label, shouldCount, index }) {
-  const count = useCountUp(num, 1800, shouldCount);
+function StatItem({ prefix = '', num, suffix, label, index }) {
   return (
-    <div className="ab2-stat" id={`stat-${index}`}>
-      <div className="ab2-stat-number">
-        {prefix}{count}<span className="ab2-stat-suf">{suffix}</span>
-      </div>
-      <div className="ab2-stat-label">{label}</div>
-    </div>
+    <motion.div
+      variants={tiltOnHover}
+      style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
+    >
+      <BorderGlow {...GLOW_PROPS} className="ab2-stat-glow">
+        <div className="ab2-stat card-scan" id={`stat-${index}`}>
+          <div className="ab2-stat-number">
+            {prefix}<span className="stat-number" data-value={num}>{num}</span><span className="ab2-stat-suf">{suffix}</span>
+          </div>
+          <div className="ab2-stat-label">{label}</div>
+        </div>
+      </BorderGlow>
+    </motion.div>
   );
 }
 
 export default function About() {
   const sectionRef = useRef(null);
-  const [shouldCount, setShouldCount] = useState(false);
-  const [visualVisible, setVisualVisible] = useState(false);
-  const [textVisible, setTextVisible] = useState(false);
-  const visualRef = useRef(null);
-  const textRef = useRef(null);
 
   useEffect(() => {
-    const createObs = (el, setter, threshold = 0.05) => {
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) { setter(true); obs.disconnect(); } },
-        { threshold }
-      );
-      obs.observe(el);
-      return obs;
-    };
-
-    const o1 = createObs(visualRef.current, setVisualVisible);
-    const o2 = createObs(textRef.current, setTextVisible);
-
-    const statsBand = sectionRef.current?.querySelector('.ab2-stats-band');
-    const statsObs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setShouldCount(true); },
-      { threshold: 0.2 }
-    );
-    if (statsBand) statsObs.observe(statsBand);
-
-    return () => { o1?.disconnect(); o2?.disconnect(); statsObs.disconnect(); };
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray('.stat-number').forEach((el) => {
+        const value = parseFloat(el.dataset.value);
+        if (Number.isNaN(value)) return;
+        gsap.from(el, {
+          textContent: 0,
+          duration: 2,
+          ease: 'power2.out',
+          snap: { textContent: 1 },
+          scrollTrigger: { trigger: '.stats-section', start: 'top 75%' },
+        });
+      });
+    }, sectionRef);
+    return () => ctx.revert();
   }, []);
 
   const stats = [
@@ -107,52 +104,56 @@ export default function About() {
   ];
 
   return (
-    <section id="about" className="about-section" ref={sectionRef}>
-      {/* Stats Band */}
-      <div className="ab2-stats-band">
-        {stats.map((s, i) => (
-          <StatItem key={i} {...s} shouldCount={shouldCount} index={i} />
-        ))}
-      </div>
+    <motion.section
+      id="about"
+      className="about-section stats-section"
+      ref={sectionRef}
+      variants={staggerChildren}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-100px' }}
+    >
+      <SceneCanvas camera={{ position: [0, 0, 4], fov: 50 }}>
+        <ambientLight intensity={0.5} />
+        <WireframeIcosahedron />
+      </SceneCanvas>
 
-      {/* Main about content */}
+      <Parallax speed={15} className="section-orbs" aria-hidden="true">
+        <GradientOrb size="340px" top="4%" right="5%" />
+        <GradientOrb size="260px" top="48%" left="3%" />
+        <GradientOrb size="220px" bottom="7%" right="32%" />
+      </Parallax>
+
+      <Parallax speed={-3} className="ab2-stats-band">
+        {stats.map((s, i) => (
+          <StatItem key={i} {...s} index={i} />
+        ))}
+      </Parallax>
+
       <div className="ab2-main">
-        {/* Left: Circle visual with image */}
-        <div
-          ref={visualRef}
-          className="ab2-visual"
-          style={{
-            opacity: visualVisible ? 1 : 0,
-            transform: visualVisible ? 'translateX(0)' : 'translateX(-40px)',
-            transition: 'opacity 0.8s ease, transform 0.8s ease',
-          }}
-        >
-          {/* Rotating ring */}
+        <motion.div className="ab2-visual" variants={slideInLeft}>
           <div className="ab2-lottie-ring" />
-          {/* Second decorative ring */}
           <div className="ab2-lottie-ring ab2-ring-2" />
 
-          {/* CENTER: Circular image container */}
           <div className="ab2-center-image-wrap">
             <div className="ab2-center-image-ring" />
             <div className="ab2-center-image">
-              <img src="/images/image1.png" alt="FUDOFAB Creative Digital Agency Team & Workspace" className="ab2-circle-img" loading="lazy" />
+              <GeometricMark variant="ring" className="ab2-circle-geo" />
               <div className="ab2-circle-overlay" />
             </div>
           </div>
 
-          {/* Floating stat cards */}
-          <div className="ab2-float-card ab2-float-1">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color:'var(--cyan)' }}>
-              <path d="M10 2l2.12 4.29 4.73.69-3.42 3.33.81 4.71L10 12.77l-4.24 2.25.81-4.71L3.15 6.98l4.73-.69L10 2z" stroke="currentColor" fill="rgba(0,212,255,0.15)" strokeWidth="1.2"/>
+          <div className="ab2-float-card ab2-float-1 card-scan">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: 'var(--cyan)' }}>
+              <path d="M10 2l2.12 4.29 4.73.69-3.42 3.33.81 4.71L10 12.77l-4.24 2.25.81-4.71L3.15 6.98l4.73-.69L10 2z" stroke="currentColor" fill="rgba(96,165,250,0.15)" strokeWidth="1.2"/>
             </svg>
             <div>
               <div className="ab2-float-num">120+</div>
               <div className="ab2-float-lbl">Projects Done</div>
             </div>
           </div>
-          <div className="ab2-float-card ab2-float-2">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color:'var(--cyan)' }}>
+          <div className="ab2-float-card ab2-float-2 card-scan">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: 'var(--cyan)' }}>
               <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.2"/>
               <path d="M10 6v4l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
@@ -161,27 +162,20 @@ export default function About() {
               <div className="ab2-float-lbl">Avg Rating</div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Right: text */}
-        <div
-          ref={textRef}
-          className="ab2-text"
-          style={{
-            opacity: textVisible ? 1 : 0,
-            transform: textVisible ? 'translateX(0)' : 'translateX(40px)',
-            transition: 'opacity 0.8s ease 0.1s, transform 0.8s ease 0.1s',
-          }}
-        >
-          <div className="svc-header-eyebrow">
-            <span className="eyebrow-dot" />
-            About FUDOFAB
-            <span className="eyebrow-dot" />
-          </div>
-          <h2 className="ab2-headline">
-            Why <span className="svc-title-accent">FUDOFAB</span> is the<br/>
-            Right <span className="ab2-outline">Choice</span>.
-          </h2>
+        <motion.div className="ab2-text" variants={fadeUp}>
+          <Parallax speed={-5}>
+            <div className="svc-header-eyebrow">
+              <span className="eyebrow-dot" />
+              About FUDOFAB
+              <span className="eyebrow-dot" />
+            </div>
+            <h2 className="ab2-headline">
+              Why <span className="svc-title-accent">FUDOFAB</span> is the<br/>
+              Right <span className="ab2-outline">Choice</span>.
+            </h2>
+          </Parallax>
           <p className="ab2-body">
             We aren't just an agency — we're your dedicated digital growth partner. FUDOFAB
             was founded to deliver fast, scalable, and conversion-focused design and development
@@ -191,23 +185,26 @@ export default function About() {
 
           <div className="ab2-features-grid">
             {features.map((f, i) => (
-              <div key={i} className="ab2-feature" id={`about-feat-${i}`}>
-                <div className="ab2-feat-icon">{f.icon}</div>
-                <div>
-                  <h3 className="ab2-feat-title">{f.title}</h3>
-                  <div className="ab2-feat-desc">{f.desc}</div>
-                </div>
-              </div>
+              <motion.div
+                key={i}
+                variants={tiltOnHover}
+                style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
+              >
+                <BorderGlow {...GLOW_PROPS} className="ab2-feature-glow">
+                  <div className="ab2-feature card-scan" id={`about-feat-${i}`}>
+                    <div className="ab2-feat-icon">{f.icon}</div>
+                    <div>
+                      <h3 className="ab2-feat-title">{f.title}</h3>
+                      <div className="ab2-feat-desc">{f.desc}</div>
+                    </div>
+                  </div>
+                </BorderGlow>
+              </motion.div>
             ))}
           </div>
 
           <div style={{ display: 'flex', gap: '1.5rem', marginTop: '2.5rem', flexWrap: 'wrap' }}>
-            <a
-              href="/enquiry"
-              className="btn-primary"
-              id="about-cta"
-              style={{ textDecoration: 'none' }}
-            >
+            <a href="/enquiry" className="btn-primary" id="about-cta" style={{ textDecoration: 'none' }}>
               <span>Start a Project</span>
             </a>
             <a
@@ -224,8 +221,8 @@ export default function About() {
               Contact Us
             </a>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 }

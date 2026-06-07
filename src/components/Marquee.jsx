@@ -1,3 +1,6 @@
+import { motion } from 'framer-motion';
+import { staggerChildren } from '../lib/motionVariants';
+
 export default function Marquee() {
   const items = [
     'Web Design', 'Development', 'Graphic Design', 'Video Editing',
@@ -7,12 +10,20 @@ export default function Marquee() {
   ];
 
   return (
-    <div className="marquee-section" id="marquee-strip" aria-hidden="true">
+    <motion.div
+      className="marquee-section"
+      id="marquee-strip"
+      aria-hidden="true"
+      variants={staggerChildren}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-100px' }}
+    >
       <div className="marquee-track">
         {items.map((item, i) => (
           <span key={i} className="marquee-item">{item}</span>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

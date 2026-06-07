@@ -1,0 +1,70 @@
+.border-glow {
+  position: relative;
+  border-radius: var(--border-glow-radius);
+  background:
+    linear-gradient(var(--border-glow-bg), var(--border-glow-bg)) padding-box,
+    conic-gradient(
+      from 180deg,
+      rgba(65, 105, 225, 0.12),
+      var(--border-glow-a),
+      var(--border-glow-b),
+      var(--border-glow-c),
+      rgba(65, 105, 225, 0.12)
+    ) border-box;
+  border: 1px solid transparent;
+  isolation: isolate;
+  overflow: hidden;
+  transform: translateZ(0);
+}
+
+.border-glow::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--border-glow-size) * -1);
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    conic-gradient(
+      from 90deg,
+      transparent 0,
+      transparent calc(50% - var(--border-glow-cone)),
+      hsla(var(--border-glow-color) / calc(0.18 * var(--border-glow-intensity))),
+      hsla(var(--border-glow-color) / calc(0.34 * var(--border-glow-intensity))),
+      transparent calc(50% + var(--border-glow-cone)),
+      transparent 100%
+    );
+  filter: blur(var(--border-glow-size));
+  opacity: 0.75;
+}
+
+.border-glow-animated::before {
+  animation: borderGlowSweep 7s linear infinite;
+  will-change: transform;
+}
+
+.border-glow-inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  border-radius: calc(var(--border-glow-radius) - 1px);
+  background: linear-gradient(145deg, rgba(240, 244, 255, 0.96), rgba(232, 239, 254, 0.9));
+  overflow: hidden;
+}
+
+@keyframes borderGlowSweep {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (max-width: 767px) {
+  .border-glow {
+    --border-glow-radius: 16px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .border-glow-animated::before {
+    animation: none;
+  }
+}
