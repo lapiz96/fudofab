@@ -17,56 +17,56 @@ const GLOW_PROPS = {
 };
 
 const PROJECTS = [
-  { id:1, cat:'Web', title:'Nebula E-Commerce', desc:'Full-stack React store with 3D product viewer', tags:['React','Three.js','Stripe'], wide:true },
-  { id:2, cat:'Design', title:'Astral Brand Identity', desc:'Complete visual identity system', tags:['Branding','Figma'] },
-  { id:3, cat:'Video', title:'Luminos Promo Reel', desc:'Cinematic 60-second brand film', tags:['Motion','After Effects'] },
-  { id:4, cat:'Web', title:'Quantum Dashboard', desc:'Real-time analytics SaaS platform', tags:['React','WebSocket'] },
-  { id:5, cat:'Design', title:'Flux Visual System', desc:'Design token system for enterprise', tags:['Design System'] },
-  { id:6, cat:'Video', title:'Orbit Social Campaign', desc:'12-reel social media series', tags:['Content','Reels'] },
+  { id: 1, cat: 'Web', title: 'Nebula E-Commerce', desc: 'Full-stack React store with 3D product viewer', tags: ['React', 'Three.js', 'Stripe'], wide: true },
+  { id: 2, cat: 'Design', title: 'Astral Brand Identity', desc: 'Complete visual identity system', tags: ['Branding', 'Figma'] },
+  { id: 3, cat: 'Video', title: 'Luminos Promo Reel', desc: 'Cinematic 60-second brand film', tags: ['Motion', 'After Effects'] },
+  { id: 4, cat: 'Web', title: 'Quantum Dashboard', desc: 'Real-time analytics SaaS platform', tags: ['React', 'WebSocket'] },
+  { id: 5, cat: 'Design', title: 'Flux Visual System', desc: 'Design token system for enterprise', tags: ['Design System'] },
+  { id: 6, cat: 'Video', title: 'Orbit Social Campaign', desc: '12-reel social media series', tags: ['Content', 'Reels'] },
 ];
 
 const SVGS = {
   web: (
-    <svg viewBox="0 0 240 160" style={{width:'100%',height:'100%',position:'absolute',inset:0}}>
+    <svg viewBox="0 0 240 160" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
       <defs>
         <linearGradient id="gw1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.15"/>
-          <stop offset="100%" stopColor="#4169E1" stopOpacity="0.05"/>
+          <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#4169E1" stopOpacity="0.05" />
         </linearGradient>
       </defs>
-      <rect x="20" y="20" width="200" height="120" rx="8" fill="url(#gw1)" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.3"/>
-      <line x1="20" y1="45" x2="220" y2="45" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.3"/>
-      <rect x="30" y="55" width="80" height="55" rx="4" stroke="#4169E1" strokeWidth="0.5" strokeOpacity="0.4" fill="none"/>
-      <rect x="120" y="55" width="90" height="20" rx="3" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.3" fill="none"/>
-      <rect x="120" y="82" width="65" height="15" rx="3" stroke="#60A5FA" strokeWidth="0.4" strokeOpacity="0.2" fill="none"/>
-      <rect x="30" y="118" width="180" height="10" rx="2" stroke="#4169E1" strokeWidth="0.3" strokeOpacity="0.2" fill="none"/>
-      <circle cx="33" cy="33" r="3" fill="#60A5FA" fillOpacity="0.5"/>
-      <circle cx="43" cy="33" r="3" fill="#4169E1" fillOpacity="0.5"/>
-      <circle cx="53" cy="33" r="3" fill="#4169E1" fillOpacity="0.2"/>
+      <rect x="20" y="20" width="200" height="120" rx="8" fill="url(#gw1)" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.3" />
+      <line x1="20" y1="45" x2="220" y2="45" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.3" />
+      <rect x="30" y="55" width="80" height="55" rx="4" stroke="#4169E1" strokeWidth="0.5" strokeOpacity="0.4" fill="none" />
+      <rect x="120" y="55" width="90" height="20" rx="3" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.3" fill="none" />
+      <rect x="120" y="82" width="65" height="15" rx="3" stroke="#60A5FA" strokeWidth="0.4" strokeOpacity="0.2" fill="none" />
+      <rect x="30" y="118" width="180" height="10" rx="2" stroke="#4169E1" strokeWidth="0.3" strokeOpacity="0.2" fill="none" />
+      <circle cx="33" cy="33" r="3" fill="#60A5FA" fillOpacity="0.5" />
+      <circle cx="43" cy="33" r="3" fill="#4169E1" fillOpacity="0.5" />
+      <circle cx="53" cy="33" r="3" fill="#4169E1" fillOpacity="0.2" />
     </svg>
   ),
   design: (
-    <svg viewBox="0 0 240 160" style={{width:'100%',height:'100%',position:'absolute',inset:0}}>
-      <circle cx="120" cy="80" r="60" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.25" fill="none"/>
-      <circle cx="120" cy="80" r="42" stroke="#4169E1" strokeWidth="0.5" strokeOpacity="0.3" fill="none"/>
-      <circle cx="120" cy="80" r="24" stroke="#60A5FA" strokeWidth="1" strokeOpacity="0.4" fill="rgba(96,165,250,0.05)"/>
-      <line x1="60" y1="80" x2="180" y2="80" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.2"/>
-      <line x1="120" y1="20" x2="120" y2="140" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.2"/>
-      {[0,60,120,180,240,300].map((a,i)=>(
+    <svg viewBox="0 0 240 160" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
+      <circle cx="120" cy="80" r="60" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.25" fill="none" />
+      <circle cx="120" cy="80" r="42" stroke="#4169E1" strokeWidth="0.5" strokeOpacity="0.3" fill="none" />
+      <circle cx="120" cy="80" r="24" stroke="#60A5FA" strokeWidth="1" strokeOpacity="0.4" fill="rgba(96,165,250,0.05)" />
+      <line x1="60" y1="80" x2="180" y2="80" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.2" />
+      <line x1="120" y1="20" x2="120" y2="140" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.2" />
+      {[0, 60, 120, 180, 240, 300].map((a, i) => (
         <line key={i} x1="120" y1="80"
-          x2={120+60*Math.cos(a*Math.PI/180)} y2={80+60*Math.sin(a*Math.PI/180)}
-          stroke="#4169E1" strokeWidth="0.3" strokeOpacity="0.2"/>
+          x2={120 + 60 * Math.cos(a * Math.PI / 180)} y2={80 + 60 * Math.sin(a * Math.PI / 180)}
+          stroke="#4169E1" strokeWidth="0.3" strokeOpacity="0.2" />
       ))}
     </svg>
   ),
   video: (
-    <svg viewBox="0 0 240 160" style={{width:'100%',height:'100%',position:'absolute',inset:0}}>
-      <rect x="20" y="30" width="200" height="110" rx="8" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.25" fill="none"/>
-      <path d="M95 65 L95 95 L130 80 Z" stroke="#60A5FA" strokeWidth="1" strokeOpacity="0.5" fill="rgba(96,165,250,0.1)"/>
-      <rect x="20" y="125" width="200" height="8" rx="2" stroke="#4169E1" strokeWidth="0.3" strokeOpacity="0.2" fill="none"/>
-      <rect x="20" y="125" width="110" height="8" rx="2" fill="rgba(96,165,250,0.15)"/>
-      <circle cx="35" cy="45" r="4" stroke="#4169E1" strokeWidth="0.5" strokeOpacity="0.4" fill="none"/>
-      <circle cx="205" cy="45" r="4" stroke="#4169E1" strokeWidth="0.5" strokeOpacity="0.4" fill="none"/>
+    <svg viewBox="0 0 240 160" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
+      <rect x="20" y="30" width="200" height="110" rx="8" stroke="#60A5FA" strokeWidth="0.5" strokeOpacity="0.25" fill="none" />
+      <path d="M95 65 L95 95 L130 80 Z" stroke="#60A5FA" strokeWidth="1" strokeOpacity="0.5" fill="rgba(96,165,250,0.1)" />
+      <rect x="20" y="125" width="200" height="8" rx="2" stroke="#4169E1" strokeWidth="0.3" strokeOpacity="0.2" fill="none" />
+      <rect x="20" y="125" width="110" height="8" rx="2" fill="rgba(96,165,250,0.15)" />
+      <circle cx="35" cy="45" r="4" stroke="#4169E1" strokeWidth="0.5" strokeOpacity="0.4" fill="none" />
+      <circle cx="205" cy="45" r="4" stroke="#4169E1" strokeWidth="0.5" strokeOpacity="0.4" fill="none" />
     </svg>
   ),
 };
@@ -74,8 +74,93 @@ const SVGS = {
 export default function Portfolio() {
   const sectionRef = useRef(null);
   const [activeFilter, setActiveFilter] = useState('All');
-  const filters = ['All','Web','Design','Video'];
-  const filtered = activeFilter === 'All' ? PROJECTS : PROJECTS.filter(p => p.cat === activeFilter);
+  const filters = ['All', 'Web', 'Design', 'Video'];
+
+  const getFolderProjects = () => {
+    const folderProjs = [];
+    try {
+      const files = import.meta.glob('/src/images/portfolio_uploads/*.{png,jpg,jpeg,svg,webp}', { eager: true, query: '?url' });
+      let idCounter = 100;
+      for (const path in files) {
+        const fileUrl = files[path].default || files[path];
+        const filenameWithExt = path.substring(path.lastIndexOf('/') + 1);
+        const filename = filenameWithExt.substring(0, filenameWithExt.lastIndexOf('.'));
+        
+        const parts = filename.split('_');
+        let cat = 'Web';
+        let title = filename;
+        let desc = 'Custom project loaded from folder';
+        let tags = ['Folder'];
+        
+        if (parts.length >= 1 && parts[0]) cat = parts[0];
+        if (parts.length >= 2 && parts[1]) title = parts[1];
+        if (parts.length >= 3 && parts[2]) desc = parts[2];
+        if (parts.length >= 4 && parts[3]) tags = parts[3].split(',');
+        
+        const validCats = ['Web', 'Design', 'Video'];
+        if (!validCats.includes(cat)) {
+          const found = validCats.find(c => c.toLowerCase() === cat.toLowerCase());
+          cat = found || 'Web';
+        }
+        
+        folderProjs.push({
+          id: idCounter++,
+          cat,
+          title,
+          desc,
+          tags,
+          image: fileUrl,
+          fromFolder: true
+        });
+      }
+    } catch (e) {
+      console.log("No custom upload folder found or empty", e);
+    }
+    return folderProjs;
+  };
+
+  const [projects, setProjects] = useState(() => {
+    const folderProjs = getFolderProjects();
+    const saved = localStorage.getItem('fudofab_portfolio');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return [...PROJECTS, ...folderProjs, ...parsed];
+      } catch (e) {
+        return [...PROJECTS, ...folderProjs];
+      }
+    }
+    return [...PROJECTS, ...folderProjs];
+  });
+
+  useEffect(() => {
+    const syncProjects = () => {
+      const folderProjs = getFolderProjects();
+      const saved = localStorage.getItem('fudofab_portfolio');
+      let parsedSaved = [];
+      if (saved) {
+        try {
+          parsedSaved = JSON.parse(saved);
+        } catch (e) {}
+      }
+      setProjects([...PROJECTS, ...folderProjs, ...parsedSaved]);
+    };
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'fudofab_portfolio') {
+        syncProjects();
+      }
+    });
+    
+    window.addEventListener('fudofab_portfolio_updated', syncProjects);
+
+    return () => {
+      window.removeEventListener('storage', syncProjects);
+      window.removeEventListener('fudofab_portfolio_updated', syncProjects);
+    };
+  }, []);
+
+  const filtered = activeFilter === 'All' ? projects : projects.filter(p => p.cat === activeFilter);
 
   useEffect(() => {
     const els = sectionRef.current?.querySelectorAll('.reveal-up, .pf2-card');
@@ -86,10 +171,10 @@ export default function Portfolio() {
     );
     els.forEach(el => obs.observe(el));
     return () => obs.disconnect();
-  }, [activeFilter]);
+  }, [activeFilter, projects]);
 
   const getSvg = (cat) => {
-    const map = { Web:'web', Design:'design', Video:'video' };
+    const map = { Web: 'web', Design: 'design', Video: 'video' };
     return SVGS[map[cat]] || SVGS.web;
   };
 
@@ -126,15 +211,17 @@ export default function Portfolio() {
           </motion.div>
         </Parallax>
 
-        <motion.div className="pf2-filters reveal-up" variants={fadeUp} style={{ transitionDelay:'0.06s' }}>
-          {filters.map(f => (
-            <button
-              key={f}
-              className={`pf2-filter-btn${activeFilter === f ? ' active' : ''}`}
-              id={`pf2-filter-${f.toLowerCase()}`}
-              onClick={() => setActiveFilter(f)}
-            >{f}</button>
-          ))}
+        <motion.div className="pf2-filters reveal-up" variants={fadeUp} style={{ transitionDelay: '0.06s', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.8rem' }}>
+            {filters.map(f => (
+              <button
+                key={f}
+                className={`pf2-filter-btn${activeFilter === f ? ' active' : ''}`}
+                id={`pf2-filter-${f.toLowerCase()}`}
+                onClick={() => setActiveFilter(f)}
+              >{f}</button>
+            ))}
+          </div>
         </motion.div>
 
         <Parallax speed={-3}>
@@ -156,7 +243,11 @@ export default function Portfolio() {
                   >
                     <div className="pf2-visual">
                       <div className="pf2-gradient" />
-                      {getSvg(p.cat)}
+                      {p.image ? (
+                        <img src={p.image} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} />
+                      ) : (
+                        getSvg(p.cat)
+                      )}
                     </div>
                     <div className="pf2-info">
                       <span className="pf2-cat">{p.cat}</span>
@@ -178,10 +269,10 @@ export default function Portfolio() {
 
         <motion.div className="pf2-bottom reveal-up" variants={fadeUp}>
           <a href="#contact" className="btn-primary" id="pf2-cta"
-            onClick={e => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior:'smooth' }); }}>
+            onClick={e => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>
             <span>Start Your Project</span>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M3 11L11 3M11 3H5M11 3v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ marginLeft: '4px' }}>
+              <path d="M3 11L11 3M11 3H5M11 3v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
         </motion.div>

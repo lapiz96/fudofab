@@ -44,32 +44,31 @@ export default function Hero() {
       tl.to(scrollRef.current, { opacity: 1, duration: 1, ease: 'power3.out' }, 1.1);
       tl.to(socialRef.current, { opacity: 1, duration: 1, ease: 'power3.out' }, 1.1);
 
-      gsap.from('.hero-title span', {
-        y: 120,
-        opacity: 0,
-        stagger: 0.08,
-        duration: 1,
-        ease: 'power4.out',
-        scrollTrigger: { trigger: '.hero', start: 'top 80%' },
-      });
-
       gsap.to(bgRef.current, {
         scale: 1.08,
         ease: 'none',
         scrollTrigger: { trigger: heroRef.current, start: 'top top', end: 'bottom top', scrub: 1.5 },
       });
-      gsap.to(headlineRef.current, {
-        y: -100,
-        opacity: 0,
-        ease: 'none',
-        scrollTrigger: { trigger: heroRef.current, start: 'top top', end: '45% top', scrub: 1 },
-      });
-      gsap.to(descRef.current, {
-        y: -70,
-        opacity: 0,
-        ease: 'none',
-        scrollTrigger: { trigger: heroRef.current, start: '5% top', end: '38% top', scrub: 1 },
-      });
+
+      const heroLeft = heroRef.current.querySelector('.hero-left');
+      if (heroLeft) {
+        gsap.to(heroLeft, {
+          y: -80,
+          opacity: 0,
+          ease: 'none',
+          scrollTrigger: { trigger: heroRef.current, start: 'top top', end: '45% top', scrub: 1 },
+        });
+      }
+
+      const heroRight = heroRef.current.querySelector('.hero-right');
+      if (heroRight) {
+        gsap.to(heroRight, {
+          y: -50,
+          opacity: 0,
+          ease: 'none',
+          scrollTrigger: { trigger: heroRef.current, start: 'top top', end: '45% top', scrub: 1 },
+        });
+      }
     }, heroRef);
     return () => ctx.revert();
   }, []);
@@ -139,10 +138,6 @@ export default function Hero() {
         </Suspense>
       </motion.div>
 
-      <SceneCanvas className="hero-canvas">
-        <ambientLight intensity={0.6} />
-        <FloatingOrb />
-      </SceneCanvas>
 
       <div className="hero-bg-overlay" />
 
@@ -164,68 +159,144 @@ export default function Hero() {
       </div>
 
       <div className="hero-content">
-        <div className="hero-left">
-          <motion.div variants={fadeUp}>
-            <div className="hero-label" ref={labelRef}>
-              Creative Digital Agency
-            </div>
-          </motion.div>
+        <Parallax speed={-4}>
+          <div className="hero-left">
+            <motion.div variants={fadeUp}>
+              <div className="hero-label" ref={labelRef}>
+                CREATIVE DIGITAL AGENCY
+              </div>
+            </motion.div>
 
-          <Parallax speed={-10}>
-            <h1 className="hero-headline hero-title" ref={headlineRef} style={{ color: '#1a2f6e' }}>
+            <h1 className="hero-headline hero-title" ref={headlineRef} style={{ color: '#0C182F' }}>
               <span className="hero-headline-line">
                 <span className="hero-headline-word hero-headline-large">WE</span>
-                <span className="hero-headline-word hero-headline-accent">&nbsp;BUILD</span>
+                <span className="hero-headline-word hero-headline-large">&nbsp;BUILD</span>
               </span>
               <span className="hero-headline-line">
-                <span className="hero-headline-word hero-headline-highlight gradient-text">DIGITAL</span>
+                <span className="hero-headline-word hero-headline-highlight gradient-text relative-highlight">
+                  DIGITAL
+                  <svg className="headline-underline-svg" viewBox="0 0 320 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path 
+                      d="M10 15c60-3.5 120-4.5 240-2 0 0-140 5.5-210 8" 
+                      stroke="#3B82F6" 
+                      strokeWidth="5.5" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
               </span>
               <span className="hero-headline-line">
                 <span className="hero-headline-word hero-headline-large">WORLDS</span>
               </span>
             </h1>
-          </Parallax>
 
-          <Parallax speed={-10}>
             <p className="hero-description" ref={descRef}>
-              We craft premium, high-converting digital experiences — specializing in custom
-              web design &amp; development, brand identity systems, and cinematic video production.
+              We craft premium, high-converting digital experiences—specializing in custom <span className="hero-desc-highlight">web design &amp; development</span>, <span className="hero-desc-highlight">brand identity systems</span>, and <span className="hero-desc-highlight">cinematic video production</span>.
             </p>
-          </Parallax>
 
-          <div className="hero-actions" ref={actionsRef}>
-            <a
-              href="#services"
-              ref={magneticBtnRef} className="btn-primary"
-              id="hero-cta-btn"
-              onClick={e => { e.preventDefault(); document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' }); }}
-            >
-              <span>Our Services</span>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </a>
-            <a
-              href="#portfolio"
-              className="btn-secondary"
-              id="hero-portfolio-btn"
-              onClick={e => { e.preventDefault(); document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' }); }}
-            >
-              <div className="btn-arrow">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <div className="hero-actions" ref={actionsRef}>
+              <a
+                href="#services"
+                ref={magneticBtnRef} className="btn-primary hero-cta-services"
+                id="hero-cta-btn"
+                onClick={e => { e.preventDefault(); document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' }); }}
+              >
+                <span>OUR SERVICES</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="hero-btn-arrow" style={{ stroke: 'currentColor' }}>
+                  <path d="M3 8h10M9 4l4 4-4 4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
+              </a>
+              <a
+                href="#portfolio"
+                className="btn-secondary hero-cta-portfolio"
+                id="hero-portfolio-btn"
+                onClick={e => { e.preventDefault(); document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' }); }}
+              >
+                <div className="btn-play-circle">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" className="hero-btn-play">
+                    <path d="M3 2v6l5-3-5-3z"/>
+                  </svg>
+                </div>
+                <span>VIEW WORK</span>
+              </a>
+            </div>
+
+            {/* Social Proof trust row */}
+            <div className="hero-trust-row">
+              <div className="hero-trust-avatars">
+                {/* Avatar 1 */}
+                <div className="hero-trust-avatar">
+                  <svg viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="16" fill="#60A5FA" />
+                    <path d="M16 23c3.5 0 6-1.5 6-4s-2.5-3.5-6-3.5-6 1-6 3.5 2.5 4 6 4z" fill="#FFE5D9" />
+                    <circle cx="16" cy="11" r="4.5" fill="#FFE5D9" />
+                    <path d="M11 9c0-1 1.5-2.5 3-3s4 .5 4 1.5-1 2-3 2-4-.5-4-.5z" fill="#1E3A8A" />
+                  </svg>
+                </div>
+                {/* Avatar 2 */}
+                <div className="hero-trust-avatar">
+                  <svg viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="16" fill="#8B5CF6" />
+                    <path d="M16 23c3.5 0 6-1.2 6-3.5s-2.5-3-6-3-6 .8-6 3 2.5 3.5 6 3.5z" fill="#FFE5D9" />
+                    <circle cx="16" cy="11.5" r="4" fill="#FFE5D9" />
+                    <path d="M12 8c1.5-2 3.5-2 5-2s3.5 1 4 2.5c0 0-.5.5-2 .5s-3-1-3-1" fill="#4C1D95" />
+                  </svg>
+                </div>
+                {/* Avatar 3 */}
+                <div className="hero-trust-avatar">
+                  <svg viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="16" fill="#06B6D4" />
+                    <path d="M16 23c3.5 0 6-1.5 6-4s-2.5-3.5-6-3.5-6 1-6 3.5 2.5 4 6 4z" fill="#FCEADE" />
+                    <circle cx="16" cy="11" r="4.5" fill="#FCEADE" />
+                    <path d="M10 9c0-1.5 2-2.5 4-3s4 1.5 4 2.5a4.5 4.5 0 0 1-8.001.5z" fill="#0891B2" />
+                  </svg>
+                </div>
+                {/* Blue count pill */}
+                <div className="hero-trust-avatar-count">
+                  <span>120+</span>
+                </div>
               </div>
-              View Work
-            </a>
+              <span className="hero-trust-text">Projects delivered for forward-thinking brands</span>
+            </div>
           </div>
-        </div>
+        </Parallax>
 
         <Parallax speed={-3} className="hero-right">
           {[
-            { label: 'Studio', value: 'FUDOFAB Creative' },
-            { label: 'Expertise', value: 'Digital & Visual Arts' },
-            { label: 'Projects', value: '120+ Delivered' },
+            {
+              label: 'Studio',
+              value: 'FUDOFAB Creative',
+              icon: (
+                <div className="hero-info-icon studio">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                </div>
+              )
+            },
+            {
+              label: 'Expertise',
+              value: 'Digital & Visual Arts',
+              icon: (
+                <div className="hero-info-icon expertise">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v20M2 12h20M5.63 5.63l12.74 12.74M5.63 18.37l12.74-12.74" />
+                  </svg>
+                </div>
+              )
+            },
+            {
+              label: 'Projects',
+              value: '120+ Delivered',
+              icon: (
+                <div className="hero-info-icon projects">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 20V10M12 20V4M6 20v-6" />
+                  </svg>
+                </div>
+              )
+            },
           ].map((card, i) => (
             <motion.div
               key={i}
@@ -248,8 +319,11 @@ export default function Hero() {
                   id={`hero-info-${i}`}
                   ref={el => (infoCardsRef.current[i] = el)}
                 >
-                  <div className="hero-info-label">{card.label}</div>
-                  <div className="hero-info-value">{card.value}</div>
+                  {card.icon}
+                  <div className="hero-info-text-group">
+                    <div className="hero-info-label">{card.label}</div>
+                    <div className="hero-info-value">{card.value}</div>
+                  </div>
                 </div>
               </BorderGlow>
             </motion.div>
@@ -258,13 +332,19 @@ export default function Hero() {
       </div>
 
       <div className="hero-scroll-indicator" ref={scrollRef}>
+        <div className="hero-scroll-mouse">
+          <div className="hero-scroll-wheel" />
+        </div>
         <span className="hero-scroll-text">Scroll</span>
         <div className="hero-scroll-line" />
       </div>
 
       <div className="hero-social" ref={socialRef}>
-        {['FB', 'IG', 'YT', 'LI'].map(s => (
-          <a key={s} href="#" id={`social-${s.toLowerCase()}`}>{s}</a>
+        {['FB', 'IG', 'YT', 'LI'].map((s, idx) => (
+          <span key={s} className="hero-social-item-wrap">
+            <a href="#" id={`social-${s.toLowerCase()}`}>{s}</a>
+            {idx < 3 && <span className="hero-social-divider">|</span>}
+          </span>
         ))}
       </div>
     </motion.section>

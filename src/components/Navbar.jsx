@@ -26,7 +26,7 @@ export default function Navbar() {
           FUDO<span className="nav-logo-dot">FAB</span>
         </a>
 
-        <ul className="nav-links">
+        <ul className="nav-links centered-menu">
           {navLinks.map((link) => (
             <li key={link}>
               <a
@@ -38,16 +38,20 @@ export default function Navbar() {
               </a>
             </li>
           ))}
-          <li>
-            <Link
-              to="/enquiry"
-              className="nav-cta"
-              id="nav-cta"
-            >
-              Enquiry
-            </Link>
-          </li>
         </ul>
+
+        <div className="nav-cta-wrapper">
+          <Link
+            to="/enquiry"
+            className="nav-cta"
+            id="nav-cta"
+          >
+            <span>ENQUIRY</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="nav-cta-arrow" style={{ marginLeft: '6px', stroke: 'currentColor' }}>
+              <path d="M3 8h10M9 4l4 4-4 4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </Link>
+        </div>
 
         <button
           className="nav-hamburger"

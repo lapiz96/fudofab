@@ -1,120 +1,125 @@
-import { memo, useEffect, useRef } from 'react';
+import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { Parallax } from 'react-scroll-parallax';
-import BorderGlow from './ui/BorderGlow/BorderGlow';
-import { GeometricMark, GradientOrb } from './ui/Visuals';
-import SceneCanvas from './three/SceneCanvas';
-import ParticleField from './three/ParticleField';
-import { fadeUp, staggerChildren, tiltOnHover } from '../lib/motionVariants';
-
-function CheckIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="7.5" stroke="currentColor" strokeWidth="1"/>
-      <path d="M5 8l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-}
+import { fadeUp, staggerChildren } from '../lib/motionVariants';
 
 const SERVICES = [
   {
     number: '01',
     tag: 'Digital Solutions',
-    title: 'Web Design &\nDevelopment',
-    desc: 'We build high-performance, responsive websites and web applications that engage visitors and accelerate business growth. From custom UI/UX design to full-stack engineering, we deliver future-proof digital products.',
-    checks: ['Custom UI/UX Design & Prototyping', 'React, Next.js & Modern Stacks', 'E-Commerce & Headless CMS', 'SEO & Page Speed Optimization'],
-    flip: false,
-    visual: 'grid',
+    title: 'Web Design & Development',
+    desc: 'We build high-performance, responsive websites and web applications that engage visitors and accelerate business growth. From custom UI/UX design to full-stack engineering.',
+    checks: ['Custom UI/UX Design', 'E-Commerce & CMS', 'SEO Optimization'],
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect x="2" y="6" width="28" height="20" rx="3" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M2 12h28" stroke="currentColor" strokeWidth="1.5"/>
+        <circle cx="7" cy="9" r="1" fill="currentColor"/>
+        <circle cx="11" cy="9" r="1" fill="currentColor"/>
+        <circle cx="15" cy="9" r="1" fill="currentColor"/>
+        <path d="M8 19l4-3 4 3 6-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
   },
   {
     number: '02',
     tag: 'Visual Identity',
-    title: 'Graphic Design\n& Branding',
-    desc: 'We design cohesive brand identity systems and striking marketing assets that define your brand and captivate your audience. Every element is crafted to communicate your core values with precision.',
-    checks: ['Brand Strategy & Logo Design', 'Digital & Print Collateral', 'Social Media Design Kits', 'Packaging & Visual Identity'],
-    flip: true,
-    visual: 'ring',
+    title: 'Graphic Design & Branding',
+    desc: 'We design cohesive brand identity systems and striking marketing assets that define your brand and captivate your audience. Every element crafted with precision.',
+    checks: ['Brand Strategy & Logo', 'Print Collateral', 'Social Media Kits', 'Packaging Design'],
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="12" stroke="currentColor" strokeWidth="1.5"/>
+        <circle cx="16" cy="16" r="6" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M16 4v4M16 24v4M4 16h4M24 16h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <circle cx="16" cy="16" r="2" fill="currentColor"/>
+      </svg>
+    ),
   },
   {
     number: '03',
     tag: 'Cinematic Content',
-    title: 'Video Editing\n& Production',
-    desc: 'We produce cinematic brand stories and high-impact social media video edits that drive engagement. From corporate promotional videos to viral short-form content, we bring your vision to life.',
-    checks: ['Cinematic Video Production', 'Advanced Color Grading & Motion Graphics', 'Short-Form Reels & TikTok Campaigns', 'Post-Production & VFX'],
-    flip: false,
-    visual: 'hex',
+    title: 'Video Editing & Production',
+    desc: 'We produce cinematic brand stories and high-impact social media video edits that drive engagement. From corporate promotional videos to viral short-form content.',
+    checks: ['Video Production', 'Color Grading & VFX', 'Short-Form Reels', 'Post-Production'],
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect x="2" y="8" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M22 13l8-4v14l-8-4V13z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+        <circle cx="11" cy="16" r="3" stroke="currentColor" strokeWidth="1.5"/>
+      </svg>
+    ),
+  },
+  {
+    number: '04',
+    tag: 'Targeted Growth',
+    title: 'Digital Marketing',
+    desc: 'We design and execute performance campaigns, targeted social ads, and content strategies that amplify brand reach, engage users, and drive high-intent conversions.',
+    checks: ['Social Media Marketing', 'Search Engine Marketing', 'Content & Copywriting', 'Analytics & Reporting'],
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="11" stroke="currentColor" strokeWidth="1.5"/>
+        <circle cx="16" cy="16" r="7" stroke="currentColor" strokeWidth="1.5"/>
+        <circle cx="16" cy="16" r="3" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M16 16l8-8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M22 8h2v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
   },
 ];
 
-const GLOW_PROPS = {
-  glowColor: '225 73 57',
-  backgroundColor: '#F0F4FF',
-  borderRadius: 20,
-  glowRadius: 35,
-  glowIntensity: 1.2,
-  coneSpread: 30,
-  animated: true,
-  colors: ['#4169E1', '#60A5FA', '#93c5fd'],
-};
-
-const ServiceVisual = memo(function ServiceVisual({ variant }) {
-  return (
-    <div className="svc-media">
-      <div className="svc-media-glow" />
-      <div className="svc-css-visual">
-        <GeometricMark variant={variant} />
-      </div>
-      <div className="svc-canvas-badge">
-        <GeometricMark variant={variant === 'grid' ? 'hex' : 'grid'} />
-      </div>
-    </div>
-  );
-});
-
-const ServiceBlock = memo(function ServiceBlock({ service, index }) {
-  const { number, tag, title, desc, checks, flip, visual } = service;
-
-  const textContent = (
-    <div className="svc-text">
-      <div className="svc-top-row">
-        <span className="svc-number">{number}</span>
-        <span className="svc-tag">{tag}</span>
-      </div>
-      <h3 className="svc-title" style={{ whiteSpace: 'pre-line' }}>{title}</h3>
-      <p className="svc-desc">{desc}</p>
-      <ul className="svc-checklist">
-        {checks.map((c, i) => (
-          <li key={i} className="svc-check-item">
-            <span className="svc-check-icon"><CheckIcon /></span>
-            {c}
-          </li>
-        ))}
-      </ul>
-      <a href="/enquiry" className="svc-cta" id={`svc-cta-${index}`}>
-        LEARN MORE
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M3 11L11 3M11 3H5M11 3v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </a>
-    </div>
-  );
-
-  const mediaContent = <ServiceVisual variant={visual} />;
+const ServiceCard = memo(function ServiceCard({ service, index }) {
+  const { number, tag, title, desc, checks, icon } = service;
 
   return (
     <motion.div
-      variants={tiltOnHover}
-      style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
+      className="svc2-card"
+      id={`svc2-card-${index}`}
+      variants={fadeUp}
+      custom={index}
     >
-      <BorderGlow {...GLOW_PROPS} className="svc-border-glow">
-        <motion.div
-          className="svc-block card-scan"
-          id={`service-block-${index}`}
-          variants={fadeUp}
-        >
-          {flip ? <>{mediaContent}{textContent}</> : <>{textContent}{mediaContent}</>}
-        </motion.div>
-      </BorderGlow>
+      {/* Default face — always visible */}
+      <div className="svc2-front">
+        {/* Top row: icon + ghost number */}
+        <div className="svc2-front-top">
+          <div className="svc2-icon-wrap">
+            {icon}
+          </div>
+          <div className="svc2-num">{number}</div>
+        </div>
+
+        {/* Bottom group: tag, title, arrow */}
+        <div className="svc2-front-bottom">
+          <div className="svc2-tag">{tag}</div>
+          <h3 className="svc2-card-title">{title}</h3>
+          <div className="svc2-arrow">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <path d="M4 16L16 4M16 4H8M16 4v8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+
+      {/* Hover overlay — slides in */}
+      <div className="svc2-hover">
+        <div className="svc2-hover-tag">{tag}</div>
+        <h3 className="svc2-hover-title">{title}</h3>
+        <p className="svc2-hover-desc">{desc}</p>
+        <ul className="svc2-hover-list">
+          {checks.map((c, i) => (
+            <li key={i} className="svc2-hover-item">
+              <span className="svc2-dot" />
+              {c}
+            </li>
+          ))}
+        </ul>
+        <a href="/enquiry" className="svc2-hover-cta" id={`svc2-cta-${index}`}>
+          Learn More
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3 11L11 3M11 3H5M11 3v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </a>
+      </div>
     </motion.div>
   );
 });
@@ -123,44 +128,47 @@ export default function Services() {
   return (
     <motion.section
       id="services"
-      className="services-section"
+      className="svc2-section"
       variants={staggerChildren}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '-100px' }}
+      viewport={{ once: true, margin: '-80px' }}
     >
-      <SceneCanvas>
-        <ambientLight intensity={0.4} />
-        <ParticleField />
-      </SceneCanvas>
+      {/* Header */}
+      <motion.div className="svc2-header" variants={fadeUp}>
+        <div className="svc2-eyebrow">
+          <span className="svc2-eyebrow-dot" />
+          What We Do
+        </div>
+        <h2 className="svc2-title">
+          Our <span className="svc2-title-accent">Services</span>
+        </h2>
+        <p className="svc2-desc">
+          Three core disciplines, one unified creative vision — designed to elevate your brand across every digital touchpoint.
+        </p>
+        <a href="/enquiry" className="svc2-all-btn" id="svc2-all-services">
+          All Services
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3 11L11 3M11 3H5M11 3v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </a>
+      </motion.div>
 
-      <Parallax speed={15} className="section-orbs" aria-hidden="true">
-        <GradientOrb size="360px" top="8%" left="-8%" />
-        <GradientOrb size="280px" top="46%" right="2%" />
-        <GradientOrb size="240px" bottom="4%" left="32%" />
-      </Parallax>
-
-      <Parallax speed={-5}>
-        <motion.div className="svc-header" variants={fadeUp}>
-          <div className="svc-header-eyebrow">
-            <span className="eyebrow-dot" />
-            What We Do
-            <span className="eyebrow-dot" />
-          </div>
-          <h2 className="svc-header-title">
-            Our <span className="svc-title-accent">Services</span>
-          </h2>
-          <p className="svc-header-desc">
-            Three core disciplines, one unified creative vision — designed to elevate your brand across every digital touchpoint.
-          </p>
-        </motion.div>
-      </Parallax>
-
-      <Parallax speed={-3} className="svc-blocks-list">
-        {SERVICES.map((svc, i) => (
-          <ServiceBlock key={i} service={svc} index={i} />
-        ))}
-      </Parallax>
+      {/* Horizontal scrollable cards */}
+      <div className="svc2-scroll-track">
+        <div className="svc2-cards-row">
+          {SERVICES.map((svc, i) => (
+            <ServiceCard key={i} service={svc} index={i} />
+          ))}
+        </div>
+        {/* Scroll hint */}
+        <div className="svc2-scroll-hint" aria-hidden="true">
+          <span>Scroll</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </div>
     </motion.section>
   );
 }

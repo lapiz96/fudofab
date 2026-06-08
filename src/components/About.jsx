@@ -1,70 +1,120 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Parallax } from 'react-scroll-parallax';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import BorderGlow from './ui/BorderGlow/BorderGlow';
-import { GeometricMark, GradientOrb } from './ui/Visuals';
+import { GradientOrb } from './ui/Visuals';
 import SceneCanvas from './three/SceneCanvas';
 import WireframeIcosahedron from './three/WireframeIcosahedron';
-import { fadeUp, slideInLeft, staggerChildren, tiltOnHover } from '../lib/motionVariants';
+import { fadeUp, staggerChildren } from '../lib/motionVariants';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const GLOW_PROPS = {
-  glowColor: '225 73 57',
-  backgroundColor: '#F0F4FF',
-  borderRadius: 20,
-  glowRadius: 35,
-  glowIntensity: 1.2,
-  coneSpread: 30,
-  animated: true,
-  colors: ['#4169E1', '#60A5FA', '#93c5fd'],
-};
+const features = [
+  {
+    num: '01',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="12" stroke="url(#g1)" strokeWidth="1.5"/>
+        <path d="M14 8v6l3.5 3.5" stroke="url(#g1)" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M9 14l5-5" stroke="url(#g1)" strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.4"/>
+        <defs>
+          <linearGradient id="g1" x1="2" y1="2" x2="26" y2="26" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#60A5FA"/><stop offset="1" stopColor="#4169E1"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    ),
+    title: 'Fast-Track Delivery',
+    desc: 'We match the speed of modern business without compromising quality. Most custom web and design projects delivered in 2–4 weeks.',
+    tag: 'Speed',
+  },
+  {
+    num: '02',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="12" stroke="url(#g2)" strokeWidth="1.5"/>
+        <circle cx="14" cy="14" r="6" stroke="url(#g2)" strokeWidth="1.2" strokeOpacity="0.6"/>
+        <circle cx="14" cy="14" r="2.5" fill="url(#g2)"/>
+        <defs>
+          <linearGradient id="g2" x1="2" y1="2" x2="26" y2="26" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#60A5FA"/><stop offset="1" stopColor="#4169E1"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    ),
+    title: 'Conversion-Focused Design',
+    desc: 'Every layout, graphic, and user flow is backed by UX research and data — engineered to maximize engagement and conversions.',
+    tag: 'Strategy',
+  },
+  {
+    num: '03',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <rect x="3" y="6" width="22" height="14" rx="2.5" stroke="url(#g3)" strokeWidth="1.5"/>
+        <path d="M8 11l-3.5 2.5 3.5 2.5M20 11l3.5 2.5-3.5 2.5M12 18l4-10" stroke="url(#g3)" strokeWidth="1.5" strokeLinecap="round"/>
+        <defs>
+          <linearGradient id="g3" x1="3" y1="6" x2="25" y2="20" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#60A5FA"/><stop offset="1" stopColor="#4169E1"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    ),
+    title: 'Scalable, Clean Code',
+    desc: 'SEO-optimized, secure, and future-proof websites built with clean code architectures that scale seamlessly with your brand.',
+    tag: 'Technology',
+  },
+  {
+    num: '04',
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <path d="M18 10c0-2.76-1.79-4-4-4S10 7.24 10 10s1.79 4 4 4 4-1.79 4-4z" stroke="url(#g4)" strokeWidth="1.5"/>
+        <path d="M4 22c0-3.87 4.48-7 10-7s10 3.13 10 7" stroke="url(#g4)" strokeWidth="1.5" strokeLinecap="round"/>
+        <defs>
+          <linearGradient id="g4" x1="4" y1="6" x2="24" y2="22" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#60A5FA"/><stop offset="1" stopColor="#4169E1"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    ),
+    title: 'Direct Expert Access',
+    desc: 'Skip the middlemen. Work directly with senior designers and developers personally invested in your brand\'s growth journey.',
+    tag: 'Partnership',
+  },
+];
 
-const FeatureIcons = {
-  speed: (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <circle cx="11" cy="11" r="10" stroke="var(--cyan)" strokeWidth="1.2"/>
-      <path d="M11 6v5l3 3" stroke="var(--cyan)" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M7 11l4-4" stroke="var(--cyan)" strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.5"/>
-    </svg>
-  ),
-  target: (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <circle cx="11" cy="11" r="10" stroke="var(--cyan)" strokeWidth="1.2"/>
-      <circle cx="11" cy="11" r="5.5" stroke="var(--cyan)" strokeWidth="1.2" strokeOpacity="0.6"/>
-      <circle cx="11" cy="11" r="2" fill="var(--cyan)"/>
-    </svg>
-  ),
-  tech: (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <rect x="2" y="5" width="18" height="12" rx="2" stroke="var(--cyan)" strokeWidth="1.2"/>
-      <path d="M7 9l-3 2 3 2M15 9l3 2-3 2M10 15l2-8" stroke="var(--cyan)" strokeWidth="1.2" strokeLinecap="round"/>
-    </svg>
-  ),
-  partner: (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <path d="M15 8c0-2.21-1.79-4-4-4S7 5.79 7 8s1.79 4 4 4 4-1.79 4-4z" stroke="var(--cyan)" strokeWidth="1.2"/>
-      <path d="M3 18c0-3.31 3.58-6 8-6s8 2.69 8 6" stroke="var(--cyan)" strokeWidth="1.2" strokeLinecap="round"/>
-    </svg>
-  ),
-};
+const stats = [
+  { num: '17+', label: 'Websites Launched' },
+  { num: '1.5M+', label: 'Users Reached' },
+  { num: '98%', label: 'Satisfaction Rate' },
+  { num: '10+', label: 'Years Expertise' },
+];
 
-function StatItem({ prefix = '', num, suffix, label, index }) {
+function WhyCard({ feature, index }) {
   return (
     <motion.div
-      variants={tiltOnHover}
+      className="why-card"
+      id={`why-card-${index}`}
+      initial={{ opacity: 0, y: 40, rotateX: 15 }}
+      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+      whileHover={{ y: -8, rotateX: -4, rotateY: 4, scale: 1.02 }}
+      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+      viewport={{ once: true, margin: '-50px' }}
       style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
     >
-      <BorderGlow {...GLOW_PROPS} className="ab2-stat-glow">
-        <div className="ab2-stat card-scan" id={`stat-${index}`}>
-          <div className="ab2-stat-number">
-            {prefix}<span className="stat-number" data-value={num}>{num}</span><span className="ab2-stat-suf">{suffix}</span>
+      <div className="why-card-inner">
+        <span className="why-card-ghost">{feature.num}</span>
+        <div className="why-card-top">
+          <div className="why-card-icon-wrap">
+            {feature.icon}
           </div>
-          <div className="ab2-stat-label">{label}</div>
+          <span className="why-card-tag">{feature.tag}</span>
         </div>
-      </BorderGlow>
+        <h3 className="why-card-title">{feature.title}</h3>
+        <p className="why-card-desc">{feature.desc}</p>
+        <div className="why-card-line" />
+      </div>
+      <div className="why-card-glow" />
     </motion.div>
   );
 }
@@ -74,153 +124,128 @@ export default function About() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.utils.toArray('.stat-number').forEach((el) => {
-        const value = parseFloat(el.dataset.value);
-        if (Number.isNaN(value)) return;
+      gsap.utils.toArray('.about-stat-num').forEach((el) => {
         gsap.from(el, {
-          textContent: 0,
-          duration: 2,
+          opacity: 0,
+          y: 20,
+          duration: 0.8,
           ease: 'power2.out',
-          snap: { textContent: 1 },
-          scrollTrigger: { trigger: '.stats-section', start: 'top 75%' },
+          scrollTrigger: { trigger: el, start: 'top 85%' },
+        });
+      });
+
+      // Animate particles
+      gsap.utils.toArray('.why-particle').forEach((p, i) => {
+        gsap.to(p, {
+          y: -40 - i * 10,
+          x: i % 2 === 0 ? 20 : -20,
+          duration: 3 + i * 0.5,
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          delay: i * 0.3,
         });
       });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
 
-  const stats = [
-    { num: 5, suffix: 'M+', label: 'Users Reached' },
-    { num: 450, suffix: 'M+', label: 'Digital Impressions' },
-    { num: 98, suffix: '%', label: 'Client Retention' },
-    { num: 8, suffix: '.03%', label: 'Avg ROI Growth' },
-  ];
-
-  const features = [
-    { icon: FeatureIcons.speed, title: 'Fast-Track Delivery', desc: 'We match the speed of modern business without compromising quality. Most custom web and design projects are delivered in 2–4 weeks.' },
-    { icon: FeatureIcons.target, title: 'Conversion-Focused Design', desc: 'Every layout, graphic, and user flow is backed by UX research and data analysis — engineered to maximize user engagement and conversions.' },
-    { icon: FeatureIcons.tech, title: 'Scalable, Clean Code', desc: 'We build search-engine optimized, secure, and future-proof websites using clean code architectures that scale with your brand.' },
-    { icon: FeatureIcons.partner, title: 'Direct Expert Access', desc: 'Skip the account managers. Work directly with senior digital designers and developers who are personally invested in your brand\'s growth.' },
-  ];
-
   return (
     <motion.section
       id="about"
-      className="about-section stats-section"
+      className="why-section"
       ref={sectionRef}
       variants={staggerChildren}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '-100px' }}
+      viewport={{ once: true, margin: '-80px' }}
     >
-      <SceneCanvas camera={{ position: [0, 0, 4], fov: 50 }}>
-        <ambientLight intensity={0.5} />
-        <WireframeIcosahedron />
-      </SceneCanvas>
+      {/* Background 3D scene */}
+      <div className="why-3d-canvas" aria-hidden="true">
+        <SceneCanvas camera={{ position: [0, 0, 5], fov: 45 }}>
+          <ambientLight intensity={0.4} />
+          <WireframeIcosahedron />
+        </SceneCanvas>
+      </div>
 
-      <Parallax speed={15} className="section-orbs" aria-hidden="true">
-        <GradientOrb size="340px" top="4%" right="5%" />
-        <GradientOrb size="260px" top="48%" left="3%" />
-        <GradientOrb size="220px" bottom="7%" right="32%" />
-      </Parallax>
-
-      <Parallax speed={-3} className="ab2-stats-band">
-        {stats.map((s, i) => (
-          <StatItem key={i} {...s} index={i} />
+      {/* Floating particles */}
+      <div className="why-particles" aria-hidden="true">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="why-particle"
+            style={{
+              left: `${10 + i * 12}%`,
+              top: `${20 + (i % 3) * 25}%`,
+              width: i % 2 === 0 ? '4px' : '6px',
+              height: i % 2 === 0 ? '4px' : '6px',
+              animationDelay: `${i * 0.4}s`,
+            }}
+          />
         ))}
+      </div>
+
+      {/* Gradient orbs */}
+      <Parallax speed={12} className="section-orbs" aria-hidden="true">
+        <GradientOrb size="400px" top="5%" right="3%" />
+        <GradientOrb size="280px" top="55%" left="2%" />
+        <GradientOrb size="240px" bottom="10%" right="38%" />
       </Parallax>
 
-      <div className="ab2-main">
-        <motion.div className="ab2-visual" variants={slideInLeft}>
-          <div className="ab2-lottie-ring" />
-          <div className="ab2-lottie-ring ab2-ring-2" />
-
-          <div className="ab2-center-image-wrap">
-            <div className="ab2-center-image-ring" />
-            <div className="ab2-center-image">
-              <GeometricMark variant="ring" className="ab2-circle-geo" />
-              <div className="ab2-circle-overlay" />
-            </div>
-          </div>
-
-          <div className="ab2-float-card ab2-float-1 card-scan">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: 'var(--cyan)' }}>
-              <path d="M10 2l2.12 4.29 4.73.69-3.42 3.33.81 4.71L10 12.77l-4.24 2.25.81-4.71L3.15 6.98l4.73-.69L10 2z" stroke="currentColor" fill="rgba(96,165,250,0.15)" strokeWidth="1.2"/>
-            </svg>
-            <div>
-              <div className="ab2-float-num">120+</div>
-              <div className="ab2-float-lbl">Projects Done</div>
-            </div>
-          </div>
-          <div className="ab2-float-card ab2-float-2 card-scan">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ color: 'var(--cyan)' }}>
-              <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.2"/>
-              <path d="M10 6v4l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            <div>
-              <div className="ab2-float-num">5.0</div>
-              <div className="ab2-float-lbl">Avg Rating</div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div className="ab2-text" variants={fadeUp}>
-          <Parallax speed={-5}>
+      <div className="why-container">
+        {/* Header */}
+        <Parallax speed={-4}>
+          <motion.div className="why-header" variants={fadeUp}>
             <div className="svc-header-eyebrow">
               <span className="eyebrow-dot" />
-              About FUDOFAB
+              Why Choose Us
               <span className="eyebrow-dot" />
             </div>
-            <h2 className="ab2-headline">
-              Why <span className="svc-title-accent">FUDOFAB</span> is the<br/>
-              Right <span className="ab2-outline">Choice</span>.
+            <h2 className="why-headline">
+              Why <span className="svc-title-accent">FUDOFAB</span> is the<br />
+              Right <span className="why-outline">Choice</span>.
             </h2>
-          </Parallax>
-          <p className="ab2-body">
-            We aren't just an agency — we're your dedicated digital growth partner. FUDOFAB
-            was founded to deliver fast, scalable, and conversion-focused design and development
-            solutions. With 120+ successful projects launched, we continue to bridge the gap between
-            premium design and technical excellence.
-          </p>
+            <p className="why-subtitle">
+              We're not just an agency — we're your dedicated digital growth partner. From concept to launch, we deliver results that matter.
+            </p>
+          </motion.div>
+        </Parallax>
 
-          <div className="ab2-features-grid">
-            {features.map((f, i) => (
-              <motion.div
-                key={i}
-                variants={tiltOnHover}
-                style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
-              >
-                <BorderGlow {...GLOW_PROPS} className="ab2-feature-glow">
-                  <div className="ab2-feature card-scan" id={`about-feat-${i}`}>
-                    <div className="ab2-feat-icon">{f.icon}</div>
-                    <div>
-                      <h3 className="ab2-feat-title">{f.title}</h3>
-                      <div className="ab2-feat-desc">{f.desc}</div>
-                    </div>
-                  </div>
-                </BorderGlow>
-              </motion.div>
-            ))}
-          </div>
+        {/* Stats row */}
+        <motion.div className="why-stats-row" variants={fadeUp}>
+          {stats.map((s, i) => (
+            <div key={i} className="why-stat" id={`about-stat-${i}`}>
+              <div className="about-stat-num why-stat-num">{s.num}</div>
+              <div className="why-stat-label">{s.label}</div>
+            </div>
+          ))}
+        </motion.div>
 
-          <div style={{ display: 'flex', gap: '1.5rem', marginTop: '2.5rem', flexWrap: 'wrap' }}>
-            <a href="/enquiry" className="btn-primary" id="about-cta" style={{ textDecoration: 'none' }}>
-              <span>Start a Project</span>
-            </a>
-            <a
-              href="#contact"
-              className="btn-secondary"
-              id="about-contact"
-              onClick={e => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}
-            >
-              <div className="btn-arrow">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              Contact Us
-            </a>
-          </div>
+        {/* 3D cards grid */}
+        <div className="why-grid">
+          {features.map((f, i) => (
+            <WhyCard key={i} feature={f} index={i} />
+          ))}
+        </div>
+
+        {/* CTA row */}
+        <motion.div className="why-cta-row" variants={fadeUp}>
+          <a href="/enquiry" className="btn-primary" id="about-cta" style={{ textDecoration: 'none' }}>
+            <span>Start a Project</span>
+          </a>
+          <a
+            href="#contact"
+            className="btn-secondary"
+            id="about-contact"
+            onClick={e => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}
+          >
+            <div className="btn-arrow">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            Contact Us
+          </a>
         </motion.div>
       </div>
     </motion.section>
