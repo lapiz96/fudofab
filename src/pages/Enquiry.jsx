@@ -193,13 +193,13 @@ export default function Enquiry() {
 
               {/* Quick contact */}
               <div className="enq-contact-quick">
-                <div className="enq-quick-item">
+                <a href="mailto:fudofab@gmail.com" className="enq-quick-item" style={{ textDecoration: 'none', transition: 'color 0.3s ease' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--cyan)'} onMouseLeave={e => e.currentTarget.style.color = ''}>
                   <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                     <rect x="1" y="2.5" width="13" height="10" rx="2" stroke="var(--cyan)" strokeWidth="1.1"/>
                     <path d="M1 5.5l6.5 4 6.5-4" stroke="var(--cyan)" strokeWidth="1.1"/>
                   </svg>
-                  hello@fudofab.com
-                </div>
+                  fudofab@gmail.com
+                </a>
                 <div className="enq-quick-item">
                   <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                     <circle cx="7.5" cy="7.5" r="6.5" stroke="var(--cyan)" strokeWidth="1.1"/>
@@ -213,7 +213,7 @@ export default function Enquiry() {
             {/* Right form panel */}
             <BorderGlow
               glowColor="225 73 57"
-              backgroundColor="#dfe1e5"
+              backgroundColor="#FFFFFF"
               borderRadius={20}
               glowRadius={35}
               glowIntensity={1.4}

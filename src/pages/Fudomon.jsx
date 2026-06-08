@@ -5,7 +5,7 @@ import { GeometricMark, GradientOrb } from '../components/ui/Visuals';
 
 const GLOW_PROPS = {
   glowColor: '225 73 57',
-  backgroundColor: '#dfe1e5',
+  backgroundColor: '#FFFFFF',
   borderRadius: 20,
   glowRadius: 35,
   glowIntensity: 1.4,
@@ -71,9 +71,15 @@ const SVGS = {
   ),
 };
 
-const STATIC_PROJECTS_COUNT = 6; // Nebula, Astral, Luminos, Quantum, Flux, Orbit
+const STATIC_PROJECTS_COUNT = 6;
 
-export default function Admin() {
+export default function Fudomon() {
+  // Authentication states
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+
   const [customProjects, setCustomProjects] = useState([]);
   const [focusedField, setFocusedField] = useState(null);
 
@@ -85,8 +91,16 @@ export default function Admin() {
   const [formImageFile, setFormImageFile] = useState(null);
   const [formImagePreview, setFormImagePreview] = useState('');
 
+  // Check authentication on mount
+  useEffect(() => {
+    if (sessionStorage.getItem('fudomon_auth') === 'true') {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   // Load custom projects on mount
   useEffect(() => {
+    if (!isLoggedIn) return;
     const loadCustom = () => {
       const saved = localStorage.getItem('fudofab_portfolio');
       if (saved) {
@@ -98,7 +112,25 @@ export default function Admin() {
       }
     };
     loadCustom();
-  }, []);
+  }, [isLoggedIn]);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (username === 'fudofab' && password === 'nothingcanbeatme') {
+      setIsLoggedIn(true);
+      sessionStorage.setItem('fudomon_auth', 'true');
+      setLoginError('');
+    } else {
+      setLoginError('Invalid username or password.');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    sessionStorage.removeItem('fudomon_auth');
+    setUsername('');
+    setPassword('');
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -162,9 +194,9 @@ export default function Admin() {
   };
 
   // Stats
-  const webCount = 2 + customProjects.filter(p => p.cat === 'Web').length; // 2 static Web
-  const designCount = 2 + customProjects.filter(p => p.cat === 'Design').length; // 2 static Design
-  const videoCount = 2 + customProjects.filter(p => p.cat === 'Video').length; // 2 static Video
+  const webCount = 2 + customProjects.filter(p => p.cat === 'Web').length;
+  const designCount = 2 + customProjects.filter(p => p.cat === 'Design').length;
+  const videoCount = 2 + customProjects.filter(p => p.cat === 'Video').length;
   const totalCount = STATIC_PROJECTS_COUNT + customProjects.length;
 
   const getSvg = (cat) => {
@@ -172,8 +204,72 @@ export default function Admin() {
     return SVGS[map[cat]] || SVGS.web;
   };
 
-  // Helper for input focus style classes
   const fieldClass = (id) => `ct2-field${focusedField === id ? ' ct2-field-focused' : ''}`;
+
+  // If not logged in, render the secure login card
+  if (!isLoggedIn) {
+    return (
+      <div className="enq-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '2rem' }}>
+        <div className="enq-bg-canvas" aria-hidden="true">
+          <GeometricMark variant="grid" className="enq-bg-geo" />
+        </div>
+        <div className="enq-glow-1" />
+        <div className="enq-glow-2" />
+        <GradientOrb size="380px" top="10%" left="5%" />
+        <GradientOrb size="300px" bottom="8%" right="5%" />
+
+        <BorderGlow {...GLOW_PROPS} className="enq-form-glow" style={{ width: '100%', maxWidth: '420px' }}>
+          <div className="enq-form-panel" style={{ padding: '2.5rem 2.2rem' }}>
+            <div className="enq-step-heading" style={{ marginBottom: '2rem', justifyContent: 'center' }}>
+              <span className="enq-step-tag" style={{ border: '1px solid rgba(59,130,246,0.5)', color: '#3B82F6', marginRight: '0.5rem' }}>🔐</span> 
+              FUDOMON LOGIN
+            </div>
+            
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div className="ct2-field">
+                <label className="ct2-label" htmlFor="login-id">Username (ID)</label>
+                <input
+                  id="login-id"
+                  type="text"
+                  className="ct2-input"
+                  placeholder="Enter ID"
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="ct2-field">
+                <label className="ct2-label" htmlFor="login-pass">Password</label>
+                <input
+                  id="login-pass"
+                  type="password"
+                  className="ct2-input"
+                  placeholder="Enter Password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              {loginError && (
+                <p style={{ color: '#EF4444', fontSize: '0.75rem', fontWeight: 700, textAlign: 'center', margin: 0 }}>
+                  {loginError}
+                </p>
+              )}
+
+              <button type="submit" className="ct2-submit enq-submit-btn" style={{ width: '100%', justifyContent: 'center' }}>
+                <span>Verify Access</span>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M3.75 9h10.5M9.75 4.5L14.25 9l-4.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </form>
+          </div>
+        </BorderGlow>
+      </div>
+    );
+  }
 
   return (
     <div className="enq-page">
@@ -190,10 +286,41 @@ export default function Admin() {
         <Link to="/" className="nav-logo" id="admin-logo-link">
           FUDO<span className="nav-logo-dot">FAB</span>
         </Link>
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
           <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.8 }}>
-            Admin Panel
+            Fudomon Panel
           </span>
+          <button
+            onClick={handleLogout}
+            className="enq-back-btn"
+            style={{
+              background: 'transparent',
+              border: '1.5px solid rgba(239, 68, 68, 0.25)',
+              color: '#EF4444',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '0.45rem 1rem',
+              borderRadius: '20px',
+              fontFamily: 'var(--font-secondary)',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              letterSpacing: '0.05em',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#EF4444';
+              e.currentTarget.style.color = '#FFFFFF';
+              e.currentTarget.style.borderColor = '#EF4444';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = '#EF4444';
+              e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
+            }}
+          >
+            Logout
+          </button>
           <Link to="/" className="enq-back-btn" id="admin-back-btn">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -491,7 +618,7 @@ export default function Admin() {
                     <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', marginTop: '0.1rem' }}>
                       {p.tags.map((t, i) => (
                         <span key={i} style={{ fontSize: '0.62rem', background: 'rgba(26, 47, 110, 0.05)', color: 'rgba(26, 47, 110, 0.6)', padding: '0.1rem 0.35rem', borderRadius: '4px' }}>
-                          {t}
+                           {t}
                         </span>
                       ))}
                     </div>

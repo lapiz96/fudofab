@@ -13,7 +13,7 @@ const Portfolio = lazy(() => import('./components/Portfolio'));
 const Testimonials = lazy(() => import('./components/Testimonials'));
 const Contact = lazy(() => import('./components/Contact'));
 const Enquiry = lazy(() => import('./pages/Enquiry'));
-const Admin = lazy(() => import('./pages/Admin'));
+const Fudomon = lazy(() => import('./pages/Fudomon'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -86,7 +86,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<MainSite />} />
           <Route path="/enquiry" element={<Enquiry />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/fudomon" element={<Fudomon />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

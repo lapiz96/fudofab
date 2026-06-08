@@ -37,6 +37,13 @@ const SocialIcons = {
   ),
 };
 
+const SocialLinks = {
+  Facebook: 'https://facebook.com/yourusername', // Replace with your Facebook page URL
+  Instagram: 'https://instagram.com/yourusername', // Replace with your Instagram profile URL
+  YouTube: 'https://youtube.com/yourusername', // Replace with your YouTube channel URL
+  LinkedIn: 'https://linkedin.com/in/yourusername', // Replace with your LinkedIn profile URL
+};
+
 const contactInfo = [
   {
     icon: (
@@ -46,8 +53,8 @@ const contactInfo = [
       </svg>
     ),
     label: 'Email Us',
-    value: 'hello@fudofab.com',
-    href: 'mailto:hello@fudofab.com',
+    value: 'fudofab@gmail.com',
+    href: 'mailto:fudofab@gmail.com',
   },
   {
     icon: (
@@ -75,7 +82,7 @@ const contactInfo = [
 
 export default function Contact() {
   const sectionRef = useRef(null);
-  const [formData, setFormData] = useState({ name: '', email: '', service: '', budget: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', service: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
 
@@ -108,7 +115,7 @@ export default function Contact() {
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
-      setFormData({ name: '', email: '', service: '', budget: '', message: '' });
+      setFormData({ name: '', email: '', service: '', message: '' });
     }, 5000);
   };
 
@@ -199,7 +206,7 @@ export default function Contact() {
             <span className="ct3-socials-label">Follow us</span>
             <div className="ct3-socials">
               {Object.entries(SocialIcons).map(([name, icon]) => (
-                <a key={name} href="#" className="ct3-social-btn"
+                <a key={name} href={SocialLinks[name] || '#'} className="ct3-social-btn"
                   id={`ct3-social-${name.toLowerCase()}`} title={name} aria-label={name}>
                   {icon}
                 </a>
@@ -240,34 +247,19 @@ export default function Contact() {
                   {field('name', 'Full Name', 'text', 'John Smith')}
                   {field('email', 'Email Address', 'email', 'john@example.com')}
                 </div>
-                <div className="ct3-form-row">
-                  <div className={`ct3-field${focusedField === 'service' ? ' ct3-field-focused' : ''}`}>
-                    <label className="ct3-label" htmlFor="ct3-service">Service Needed</label>
-                    <select id="ct3-service" className="ct3-select"
-                      value={formData.service}
-                      onChange={e => setFormData(p => ({ ...p, service: e.target.value }))}
-                      onFocus={handleFocus('service')} onBlur={handleBlur}>
-                      <option value="">Select service...</option>
-                      <option value="web">Web Design &amp; Development</option>
-                      <option value="graphic">Graphic Design &amp; Branding</option>
-                      <option value="video">Video Editing &amp; Production</option>
-                      <option value="marketing">Digital Marketing</option>
-                      <option value="all">Full Creative Package</option>
-                    </select>
-                  </div>
-                  <div className={`ct3-field${focusedField === 'budget' ? ' ct3-field-focused' : ''}`}>
-                    <label className="ct3-label" htmlFor="ct3-budget">Project Budget</label>
-                    <select id="ct3-budget" className="ct3-select"
-                      value={formData.budget}
-                      onChange={e => setFormData(p => ({ ...p, budget: e.target.value }))}
-                      onFocus={handleFocus('budget')} onBlur={handleBlur}>
-                      <option value="">Select budget...</option>
-                      <option value="1k">$1K – $5K</option>
-                      <option value="5k">$5K – $15K</option>
-                      <option value="15k">$15K – $50K</option>
-                      <option value="50k">$50K+</option>
-                    </select>
-                  </div>
+                <div className={`ct3-field${focusedField === 'service' ? ' ct3-field-focused' : ''}`}>
+                  <label className="ct3-label" htmlFor="ct3-service">Service Needed</label>
+                  <select id="ct3-service" className="ct3-select"
+                    value={formData.service}
+                    onChange={e => setFormData(p => ({ ...p, service: e.target.value }))}
+                    onFocus={handleFocus('service')} onBlur={handleBlur}>
+                    <option value="">Select service...</option>
+                    <option value="web">Web Design &amp; Development</option>
+                    <option value="graphic">Graphic Design &amp; Branding</option>
+                    <option value="video">Video Editing &amp; Production</option>
+                    <option value="marketing">Digital Marketing</option>
+                    <option value="all">Full Creative Package</option>
+                  </select>
                 </div>
                 <div className={`ct3-field${focusedField === 'message' ? ' ct3-field-focused' : ''}`}>
                   <label className="ct3-label" htmlFor="ct3-message">Tell Us About Your Project</label>
@@ -340,11 +332,10 @@ export default function Contact() {
                     {label}
                   </a>
                 ))}
-                <Link to="/admin">Admin Panel</Link>
               </div>
               <div className="ct3-footer-nav-col">
                 <div className="ct3-footer-nav-title">Contact</div>
-                <a href="mailto:hello@fudofab.com">hello@fudofab.com</a>
+                <a href="mailto:fudofab@gmail.com">fudofab@gmail.com</a>
                 <a href="/enquiry">Submit Enquiry</a>
                 <a href="#contact" onClick={e => { e.preventDefault(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>Get In Touch</a>
               </div>
@@ -355,7 +346,7 @@ export default function Contact() {
               <div className="ct3-footer-nav-title">Follow Us</div>
               <div className="ct3-footer-socials">
                 {Object.entries(SocialIcons).map(([name, icon]) => (
-                  <a key={name} href="#" className="ct3-footer-social-btn"
+                  <a key={name} href={SocialLinks[name] || '#'} className="ct3-footer-social-btn"
                     id={`footer-social-${name.toLowerCase()}`} title={name} aria-label={name}>
                     {icon}
                   </a>
@@ -366,7 +357,7 @@ export default function Contact() {
                   <rect x="1" y="2.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1"/>
                   <path d="M1 5l6 3.5L13 5" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
                 </svg>
-                hello@fudofab.com
+                fudofab@gmail.com
               </div>
             </div>
           </div>
